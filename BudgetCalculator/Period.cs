@@ -19,18 +19,21 @@ namespace BudgetCalculator
 
         public int EffectiveDays(Period period)
         {
-            var effectiveStartDate = this.Start;
-            if (this.Start < period.Start)
-            {
-                effectiveStartDate = period.Start;
-            }
+            return (EffectiveEndDate(period).AddDays(1) - EffectiveStartDate(period)).Days;
+        }
 
-            var effectiveEndDate = this.End;
-            if (this.End > period.End)
-            {
-                effectiveEndDate = period.End;
-            }
-            return (effectiveEndDate.AddDays(1) - effectiveStartDate).Days;
+        private DateTime EffectiveEndDate(Period period)
+        {
+            return End > period.End
+                ? period.End
+                : End;
+        }
+
+        private DateTime EffectiveStartDate(Period period)
+        {
+            return Start < period.Start
+                ? period.Start
+                : Start;
         }
     }
 }
