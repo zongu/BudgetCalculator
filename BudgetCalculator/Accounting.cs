@@ -25,24 +25,7 @@ namespace BudgetCalculator
                 return 0;
             }
 
-            var validDays = EffectiveDays(period, budget);
-            return budget.DailyAmount() * validDays;
-        }
-
-        private int EffectiveDays(Period period, Budget budget)
-        {
-            var effectiveStartDate = period.Start;
-            if (period.Start < budget.FirstDay)
-            {
-                effectiveStartDate = budget.FirstDay;
-            }
-
-            var effectiveEndDate = period.End;
-            if (period.End > budget.LastDay)
-            {
-                effectiveEndDate = budget.LastDay;
-            }
-            return (effectiveEndDate.AddDays(1) - effectiveStartDate).Days;
+            return budget.DailyAmount() * period.EffectiveDays(budget);
         }
     }
 }
