@@ -18,7 +18,7 @@ namespace BudgetCalculator
             var period = new Period(start, end);
 
             return IsSameMonth(period)
-                ? GetOneMonthAmount(start, end)
+                ? GetOneMonthAmount(period)
                 : GetRangeMonthAmount(start, end);
         }
 
@@ -30,16 +30,16 @@ namespace BudgetCalculator
             {
                 if (index == 0)
                 {
-                    total += GetOneMonthAmount(start, start.LastDate());
+                    total += GetOneMonthAmount(new Period(start, start.LastDate()));
                 }
                 else if (index == monthCount)
                 {
-                    total += GetOneMonthAmount(end.FirstDate(), end);
+                    total += GetOneMonthAmount(new Period(end.FirstDate(), end));
                 }
                 else
                 {
                     var now = start.AddMonths(index);
-                    total += GetOneMonthAmount(now.FirstDate(), now.LastDate());
+                    total += GetOneMonthAmount(new Period(now.FirstDate(), now.LastDate()));
                 }
             }
             return total;
@@ -50,20 +50,21 @@ namespace BudgetCalculator
             return period.Start.Year == period.End.Year && period.Start.Month == period.End.Month;
         }
 
-        private int GetOneMonthAmount(DateTime start, DateTime end)
+        private int GetOneMonthAmount(Period period)
         {
-            var list = this._repo.GetAll();
-            var budget = list.Get(start)?.Amount ?? 0;
+            var budget = this._repo.GetAll().Get(period.Start);
+            if (budget == null)
+            {
+                return 0;
+            }
 
-            var days = DateTime.DaysInMonth(start.Year, start.Month);
-            var validDays = GetValidDays(start, end);
-
-            return (budget / days) * validDays;
+            var validDays = EffectiveDays(period.Start, period.End);
+            return budget.DailyAmount() * validDays;
         }
 
-        private int GetValidDays(DateTime start, DateTime end)
+        private int EffectiveDays(DateTime start, DateTime end)
         {
-            return (end - start).Days + 1;
+            return (end.AddDays(1) - start).Days;
         }
     }
 
