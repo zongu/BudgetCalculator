@@ -4,6 +4,22 @@ using System.Linq;
 
 namespace BudgetCalculator
 {
+    internal class Period
+    {
+        public Period(DateTime start, DateTime end)
+        {
+            if (start > end)
+            {
+                throw new ArgumentException();
+            }
+            Start = start;
+            End = end;
+        }
+
+        public DateTime Start { get; private set; }
+        public DateTime End { get; private set; }
+    }
+
     internal class Accounting
     {
         private readonly IRepository<Budget> _repo;
@@ -15,12 +31,9 @@ namespace BudgetCalculator
 
         public decimal TotalAmount(DateTime start, DateTime end)
         {
-            if (start > end)
-            {
-                throw new ArgumentException();
-            }
+            var period = new Period(start, end);
 
-            return IsSameMonth(start, end)
+            return IsSameMonth(period)
                 ? GetOneMonthAmount(start, end)
                 : GetRangeMonthAmount(start, end);
         }
@@ -48,9 +61,9 @@ namespace BudgetCalculator
             return total;
         }
 
-        private bool IsSameMonth(DateTime start, DateTime end)
+        private bool IsSameMonth(Period period)
         {
-            return start.Year == end.Year && start.Month == end.Month;
+            return period.Start.Year == period.End.Year && period.Start.Month == period.End.Month;
         }
 
         private int GetOneMonthAmount(DateTime start, DateTime end)
@@ -94,6 +107,5 @@ namespace BudgetCalculator
         {
             return new DateTime(date.Year, date.Month, 1);
         }
-
     }
 }
