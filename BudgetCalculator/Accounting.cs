@@ -24,7 +24,7 @@ namespace BudgetCalculator
 
         private decimal GetRangeMonthAmount(Period period)
         {
-            var monthCount = period.End.MonthDifference(period.Start);
+            var monthCount = period.TotalMonths();
             var total = 0;
             for (var index = 0; index <= monthCount; index++)
             {

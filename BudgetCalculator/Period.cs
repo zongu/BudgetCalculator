@@ -16,5 +16,11 @@ namespace BudgetCalculator
 
         public DateTime Start { get; private set; }
         public DateTime End { get; private set; }
+
+        public int TotalMonths()
+        {
+            var monthCount = End.MonthDifference(Start);
+            return monthCount;
+        }
     }
 }
