@@ -20,58 +20,37 @@ namespace BudgetCalculator
                 throw new ArgumentException();
             }
 
-            var list = this._repo.GetAll();
-            if (list.Any() == false)
-            {
-                return 0;
-            }
-
-            if (IsSameMonth(start, end))
-            {
-                return GetOneMonthAmount(start, end);
-            }
-            else
-            {
-                return GetRangeMonthAmount(start, end);
-            }
+            return IsSameMonth(start, end)
+                ? GetOneMonthAmount(start, end)
+                : GetRangeMonthAmount(start, end);
         }
 
         private decimal GetRangeMonthAmount(DateTime start, DateTime end)
         {
             var monthCount = end.MonthDifference(start);
             var total = 0;
-            for (int index = 0; index <= monthCount; index++)
+            for (var index = 0; index <= monthCount; index++)
             {
                 if (index == 0)
                 {
-                    total += GetOneMonthAmount(start, GetLastDate(start));
+                    total += GetOneMonthAmount(start, start.LastDate());
                 }
                 else if (index == monthCount)
                 {
-                    total += GetOneMonthAmount(GetFirstDate(end), end);
+                    total += GetOneMonthAmount(end.FirstDate(), end);
                 }
                 else
                 {
                     var now = start.AddMonths(index);
-                    total += GetOneMonthAmount(GetFirstDate(now), GetLastDate(now));
+                    total += GetOneMonthAmount(now.FirstDate(), now.LastDate());
                 }
             }
             return total;
         }
 
-        private static bool IsSameMonth(DateTime start, DateTime end)
+        private bool IsSameMonth(DateTime start, DateTime end)
         {
             return start.Year == end.Year && start.Month == end.Month;
-        }
-
-        private DateTime GetLastDate(DateTime date)
-        {
-            return new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
-        }
-
-        private DateTime GetFirstDate(DateTime date)
-        {
-            return new DateTime(date.Year, date.Month, 1);
         }
 
         private int GetOneMonthAmount(DateTime start, DateTime end)
@@ -105,5 +84,16 @@ namespace BudgetCalculator
         {
             return (lValue.Month - rValue.Month) + 12 * (lValue.Year - rValue.Year);
         }
+
+        public static DateTime LastDate(this DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
+        }
+
+        public static DateTime FirstDate(this DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, 1);
+        }
+
     }
 }
