@@ -28,25 +28,24 @@ namespace BudgetCalculator
             var total = 0;
             for (var index = 0; index <= monthCount; index++)
             {
+                var effectiveAmount = 0;
                 if (index == 0)
                 {
-                    var firstMonthPeriod = new Period(period.Start, period.Start.LastDate());
-                    var firstMonthBudgetAmount = GetOneMonthAmount(firstMonthPeriod);
-                    total += firstMonthBudgetAmount;
+                    var monthPeriod = new Period(period.Start, period.Start.LastDate());
+                    effectiveAmount = GetOneMonthAmount(monthPeriod);
                 }
                 else if (index == monthCount)
                 {
-                    var lastMonthPeriod = new Period(period.End.FirstDate(), period.End);
-                    var lastMonthBudgetAmount = GetOneMonthAmount(lastMonthPeriod);
-                    total += lastMonthBudgetAmount;
+                    var monthPeriod = new Period(period.End.FirstDate(), period.End);
+                    effectiveAmount = GetOneMonthAmount(monthPeriod);
                 }
                 else
                 {
                     var now = period.Start.AddMonths(index);
-                    var fullMonthPeriod = new Period(now.FirstDate(), now.LastDate());
-                    var fullMonthBudgetAmount = GetOneMonthAmount(fullMonthPeriod);
-                    total += fullMonthBudgetAmount;
+                    var monthPeriod = new Period(now.FirstDate(), now.LastDate());
+                    effectiveAmount = GetOneMonthAmount(monthPeriod);
                 }
+                total += effectiveAmount;
             }
             return total;
         }
