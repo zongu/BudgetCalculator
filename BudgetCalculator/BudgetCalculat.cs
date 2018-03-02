@@ -26,32 +26,42 @@ namespace BudgetCalculator
                 return 0;
             }
 
-            if (start.Year == end.Year && start.Month == end.Month)
+            if (IsSameMonth(start, end))
             {
                 return GetOneMonthAmount(start, end);
             }
             else
             {
-                var monthCount = end.MonthDifference(start);
-                var total = 0;
-                for (int index = 0; index <= monthCount; index++)
-                {
-                    if (index == 0)
-                    {
-                        total += GetOneMonthAmount(start, GetLastDate(start));
-                    }
-                    else if (index == monthCount)
-                    {
-                        total += GetOneMonthAmount(GetFirstDate(end), end);
-                    }
-                    else
-                    {
-                        var now = start.AddMonths(index);
-                        total += GetOneMonthAmount(GetFirstDate(now), GetLastDate(now));
-                    }
-                }
-                return total;
+                return GetRangeMonthAmount(start, end);
             }
+        }
+
+        private decimal GetRangeMonthAmount(DateTime start, DateTime end)
+        {
+            var monthCount = end.MonthDifference(start);
+            var total = 0;
+            for (int index = 0; index <= monthCount; index++)
+            {
+                if (index == 0)
+                {
+                    total += GetOneMonthAmount(start, GetLastDate(start));
+                }
+                else if (index == monthCount)
+                {
+                    total += GetOneMonthAmount(GetFirstDate(end), end);
+                }
+                else
+                {
+                    var now = start.AddMonths(index);
+                    total += GetOneMonthAmount(GetFirstDate(now), GetLastDate(now));
+                }
+            }
+            return total;
+        }
+
+        private static bool IsSameMonth(DateTime start, DateTime end)
+        {
+            return start.Year == end.Year && start.Month == end.Month;
         }
 
         private DateTime GetLastDate(DateTime date)
@@ -75,40 +85,9 @@ namespace BudgetCalculator
             return (budget / days) * validDays;
         }
 
-        private int GetAvgBudget(DateTime start, DateTime end, Budget budget)
-        {
-            var total = 0;
-            var startMonth = start.Month;
-            var endMonth = end.Month;
-            var mountcount = end.MonthDifference(start);
-
-            for (int index = 0; index < mountcount; index++)
-            {
-                var now = start.AddMonths(index);
-                var validDays = GetValidDays(start, end);
-                total += (budget.Amount / DateTime.DaysInMonth(start.Year, start.Month)) * validDays;
-            }
-            return total;
-        }
-
         private int GetValidDays(DateTime start, DateTime end)
         {
             return (end - start).Days + 1;
-        }
-
-        private List<DateTime> GetMonthRange(DateTime start, DateTime end)
-        {
-            var s = new DateTime(start.Year, start.Month, 1);
-            var e = new DateTime(end.Year, end.Month, 1);
-            var current = s;
-            var result = new List<DateTime>();
-            while (current < e)
-            {
-                result.Add(new DateTime(current.Year, current.Month, 1));
-                current = current.AddMonths(1);
-            }
-
-            return result;
         }
     }
 

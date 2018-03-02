@@ -110,5 +110,40 @@ namespace BudgetCalculator
 
             actual.Should().Be(362);
         }
+
+        [TestMethod]
+        public void 當一月預算為62_二月預算為0_三月預算為62_一月一號到三月十號_預算拿到82()
+        {
+            var target = BudgetCalculat(new List<Budget>()
+            {
+                new Budget() { YearMonth = "201801", Amount = 62 },
+                new Budget() { YearMonth = "201802", Amount = 0 },
+                new Budget() { YearMonth = "201803", Amount = 62 },
+            });
+            var start = new DateTime(2018, 1, 1);
+            var end = new DateTime(2018, 3, 10);
+
+            var actual = target.Calculate(start, end);
+
+            actual.Should().Be(82);
+        }
+
+        [TestMethod]
+        public void 當十二月預算為310一月預算為310_二月預算為280_三月預算為310_十二月一號到三月十號_預算拿到1000()
+        {
+            var target = BudgetCalculat(new List<Budget>()
+            {
+                new Budget() { YearMonth = "201712", Amount = 310 },
+                new Budget() { YearMonth = "201801", Amount = 310 },
+                new Budget() { YearMonth = "201802", Amount = 280 },
+                new Budget() { YearMonth = "201803", Amount = 310 },
+            });
+            var start = new DateTime(2017, 12, 1);
+            var end = new DateTime(2018, 3, 10);
+
+            var actual = target.Calculate(start, end);
+
+            actual.Should().Be(1000);
+        }
     }
 }
