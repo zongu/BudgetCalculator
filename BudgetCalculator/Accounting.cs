@@ -28,24 +28,28 @@ namespace BudgetCalculator
             var total = 0;
             for (var index = 0; index <= monthCount; index++)
             {
-                Period monthPeriod = null;
-                if (index == 0)
-                {
-                    monthPeriod = new Period(period.Start, period.Start.LastDate());
-                }
-                else if (index == monthCount)
-                {
-                    monthPeriod = new Period(period.End.FirstDate(), period.End);
-                }
-                else
-                {
-                    var now = period.Start.AddMonths(index);
-                    monthPeriod = new Period(now.FirstDate(), now.LastDate());
-                }
+                var monthPeriod = GetPeriod(period, index, monthCount);
 
                 total += GetOneMonthAmount(monthPeriod);
             }
             return total;
+        }
+
+        private static Period GetPeriod(Period period, int index, int monthCount)
+        {
+            if (index == 0)
+            {
+                return new Period(period.Start, period.Start.LastDate());
+            }
+            else if (index == monthCount)
+            {
+                return new Period(period.End.FirstDate(), period.End);
+            }
+            else
+            {
+                var now = period.Start.AddMonths(index);
+                return new Period(now.FirstDate(), now.LastDate());
+            }
         }
 
         private bool IsSameMonth(Period period)
