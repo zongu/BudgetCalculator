@@ -38,5 +38,10 @@ namespace BudgetCalculator
             var dailyAmount = Amount / TotalDays;
             return dailyAmount;
         }
+
+        public int EffectiveAmount(Period period)
+        {
+            return period.EffectiveDays(new Period(this.FirstDay, this.LastDay)) * this.DailyAmount();
+        }
     }
 }

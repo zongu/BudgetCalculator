@@ -15,13 +15,7 @@ namespace BudgetCalculator
         public decimal TotalAmount(DateTime start, DateTime end)
         {
             var period = new Period(start, end);
-
-            return _repo.GetAll().Sum(b => EffectiveAmountOfBudget(period, b));
-        }
-
-        private int EffectiveAmountOfBudget(Period period, Budget budget)
-        {
-            return period.EffectiveDays(budget) * budget.DailyAmount();
+            return _repo.GetAll().Sum(b => b.EffectiveAmount(period));
         }
     }
 }

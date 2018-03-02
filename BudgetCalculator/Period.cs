@@ -2,7 +2,7 @@
 
 namespace BudgetCalculator
 {
-    internal class Period
+    public class Period
     {
         public Period(DateTime startDate, DateTime endDate)
         {
@@ -17,27 +17,27 @@ namespace BudgetCalculator
         public DateTime StartDate { get; private set; }
         public DateTime EndDate { get; private set; }
 
-        public int EffectiveDays(Budget budget)
+        public int EffectiveDays(Period periodOfBudget)
         {
-            if (EndDate < budget.FirstDay)
+            if (EndDate < periodOfBudget.StartDate)
             {
                 return 0;
             }
 
-            if (StartDate > budget.LastDay)
+            if (StartDate > periodOfBudget.EndDate)
             {
                 return 0;
             }
             var effectiveEndDate = EndDate;
-            if (EndDate > budget.LastDay)
+            if (EndDate > periodOfBudget.EndDate)
             {
-                effectiveEndDate = budget.LastDay;
+                effectiveEndDate = periodOfBudget.EndDate;
             }
 
             var effectiveStartDate = StartDate;
-            if (StartDate < budget.FirstDay)
+            if (StartDate < periodOfBudget.StartDate)
             {
-                effectiveStartDate = budget.FirstDay;
+                effectiveStartDate = periodOfBudget.StartDate;
             }
 
             var effectiveDays = (effectiveEndDate.AddDays(1) - effectiveStartDate).Days;
