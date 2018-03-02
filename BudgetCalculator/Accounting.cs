@@ -43,39 +43,12 @@ namespace BudgetCalculator
             var totalAmount = 0m;
             foreach (var budget in budgets)
             {
-                totalAmount += JoeyOneMonthAmount(period, budget);
+                totalAmount += EffectiveAmountOfBudget(period, budget);
             }
             return totalAmount;
-            return IsSameMonth(period)
-                ? GetOneMonthAmount(period)
-                : GetRangeMonthAmount(period);
         }
 
-        private decimal GetRangeMonthAmount(Period period)
-        {
-            var total = 0;
-            var monthsBetweenPeriod = period.MonthsBetweenPeriod();
-
-            for (var index = 0; index <= monthsBetweenPeriod; index++)
-            {
-                if (index == 0)
-                {
-                    total += GetOneMonthAmount(new Period(period.StartDate, period.StartDate.LastDate()));
-                }
-                else if (index == monthsBetweenPeriod)
-                {
-                    total += GetOneMonthAmount(new Period(period.EndDate.FirstDate(), period.EndDate));
-                }
-                else
-                {
-                    var now = period.StartDate.AddMonths(index);
-                    total += GetOneMonthAmount(new Period(now.FirstDate(), now.LastDate()));
-                }
-            }
-            return total;
-        }
-
-        private int JoeyOneMonthAmount(Period period, Budget budget)
+        private int EffectiveAmountOfBudget(Period period, Budget budget)
         {
             if (period.EndDate < budget.FirstDay)
             {
