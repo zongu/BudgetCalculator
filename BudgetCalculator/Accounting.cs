@@ -35,30 +35,27 @@ namespace BudgetCalculator
 
             return IsSameMonth(period)
                 ? GetOneMonthAmount(period)
-                : GetRangeMonthAmount(start, end);
+                : GetRangeMonthAmount(period);
         }
 
-        private decimal GetRangeMonthAmount(DateTime start, DateTime end)
+        private decimal GetRangeMonthAmount(Period period)
         {
-            var monthCount = end.MonthDifference(start);
+            var monthCount = period.EndDate.MonthDifference(period.StartDate);
             var total = 0;
             for (var index = 0; index <= monthCount; index++)
             {
                 if (index == 0)
                 {
-                    var period = new Period(start, start.LastDate());
-                    total += GetOneMonthAmount(period);
+                    total += GetOneMonthAmount(new Period(period.StartDate, period.StartDate.LastDate()));
                 }
                 else if (index == monthCount)
                 {
-                    var period = new Period(end.FirstDate(), end);
-                    total += GetOneMonthAmount(period);
+                    total += GetOneMonthAmount(new Period(period.EndDate.FirstDate(), period.EndDate));
                 }
                 else
                 {
-                    var now = start.AddMonths(index);
-                    var period = new Period(now.FirstDate(), now.LastDate());
-                    total += GetOneMonthAmount(period);
+                    var now = period.StartDate.AddMonths(index);
+                    total += GetOneMonthAmount(new Period(now.FirstDate(), now.LastDate()));
                 }
             }
             return total;
