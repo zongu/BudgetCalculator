@@ -44,8 +44,14 @@ namespace BudgetCalculator
 
         private int EffectiveAmountOfBudget(Period period, Budget budget)
         {
-            var dailyAmount = budget.Amount / budget.TotalDays;
+            var dailyAmount = DailyAmount(budget);
             return EffectiveDays(period, budget) * dailyAmount;
+        }
+
+        private static int DailyAmount(Budget budget)
+        {
+            var dailyAmount = budget.Amount / budget.TotalDays;
+            return dailyAmount;
         }
 
         private static int EffectiveDays(Period period, Budget budget)
