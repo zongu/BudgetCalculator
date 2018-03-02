@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace BudgetCalculator
@@ -27,126 +26,78 @@ namespace BudgetCalculator
         }
 
         [TestMethod]
-        public void 找不到這個月的預算_拿到0()
+        public void no_effective_days_period_before_budget_month()
         {
-            var target = GetAccounting(new List<Budget>() { new Budget() { YearMonth = "201801", Amount = 62 } });
-            var start = new DateTime(2018, 2, 1);
-            var end = new DateTime(2018, 2, 15);
-
-            var actual = target.Calculate(start, end);
-
-            actual.Should().Be(0);
+            GivenBudgets(new Budget() { YearMonth = "201801", Amount = 62 });
+            TotalAmountShouldBe(new DateTime(2018, 2, 1), new DateTime(2018, 2, 15), 0);
         }
 
         [TestMethod]
-        public void 時間起訖不合法()
+        public void invalid_period()
         {
-            var target = GetAccounting(new List<Budget>());
-            var start = new DateTime(2018, 3, 1);
-            var end = new DateTime(2018, 2, 1);
-
-            Action actual = () => target.Calculate(start, end);
-
+            Action actual = () => _accounting.Calculate(new DateTime(2018, 3, 1), new DateTime(2018, 2, 1));
             actual.Should().Throw<ArgumentException>();
         }
 
         [TestMethod]
-        public void 當一月預算為62_一月一號到一月十五號_預算拿到30()
+        public void fifteen_effective_days_period_between_budget_month()
         {
-            var target = GetAccounting(new List<Budget>() { new Budget() { YearMonth = "201801", Amount = 62 } });
-            var start = new DateTime(2018, 1, 1);
-            var end = new DateTime(2018, 1, 15);
-
-            var actual = target.Calculate(start, end);
-
-            actual.Should().Be(30);
+            GivenBudgets(new Budget() { YearMonth = "201801", Amount = 62 });
+            TotalAmountShouldBe(new DateTime(2018, 1, 1), new DateTime(2018, 1, 15), 30);
         }
 
         [TestMethod]
-        public void 當一月預算為62_一月一號到一月三十一號_預算拿到62()
+        public void period_equals_to_budget_month()
         {
-            var target = GetAccounting(new List<Budget>() { new Budget() { YearMonth = "201801", Amount = 62 } });
-            var start = new DateTime(2018, 1, 1);
-            var end = new DateTime(2018, 1, 31);
-
-            var actual = target.Calculate(start, end);
-
-            actual.Should().Be(62);
+            GivenBudgets(new Budget() { YearMonth = "201801", Amount = 62 });
+            TotalAmountShouldBe(new DateTime(2018, 1, 1), new DateTime(2018, 1, 31), 62);
         }
 
         [TestMethod]
-        public void 當一月預算為62_二月預算為0_三月預算為62_一月一號到三月十號_預算拿到82()
+        public void period_cross_3_budget_months()
         {
-            var target = GetAccounting(new List<Budget>()
-            {
+            GivenBudgets(
                 new Budget() { YearMonth = "201801", Amount = 62 },
                 new Budget() { YearMonth = "201802", Amount = 0 },
-                new Budget() { YearMonth = "201803", Amount = 62 },
-            });
-            var start = new DateTime(2018, 1, 1);
-            var end = new DateTime(2018, 3, 10);
+                new Budget() { YearMonth = "201803", Amount = 62 });
 
-            var actual = target.Calculate(start, end);
-
-            actual.Should().Be(82);
+            TotalAmountShouldBe(new DateTime(2018, 1, 1), new DateTime(2018, 3, 10), 82);
         }
 
         [TestMethod]
-        public void 當一月預算為62_二月預算為280_一月一號到二月二十八號_預算拿到342()
+        public void period_equals_to_2_budget_month()
         {
-            var target = GetAccounting(new List<Budget>()
-            {
+            GivenBudgets(
                 new Budget() { YearMonth = "201801", Amount = 62 },
                 new Budget() { YearMonth = "201802", Amount = 280 }
-            });
-            var start = new DateTime(2018, 1, 1);
-            var end = new DateTime(2018, 2, 28);
+                );
 
-            var actual = target.Calculate(start, end);
-
-            actual.Should().Be(342);
+            TotalAmountShouldBe(new DateTime(2018, 1, 1), new DateTime(2018, 2, 28), 342);
         }
 
         [TestMethod]
-        public void 當一月預算為62_二月預算為280_三月預算為62_一月一號到三月十號_預算拿到362()
+        public void period_cross_multiple_budgets()
         {
-            var target = GetAccounting(new List<Budget>()
-            {
+            GivenBudgets(
                 new Budget() { YearMonth = "201801", Amount = 62 },
                 new Budget() { YearMonth = "201802", Amount = 280 },
-                new Budget() { YearMonth = "201803", Amount = 62 },
-            });
-            var start = new DateTime(2018, 1, 1);
-            var end = new DateTime(2018, 3, 10);
+                new Budget() { YearMonth = "201803", Amount = 62 }
+                );
 
-            var actual = target.Calculate(start, end);
-
-            actual.Should().Be(362);
+            TotalAmountShouldBe(new DateTime(2018, 1, 1), new DateTime(2018, 3, 10), 362);
         }
 
         [TestMethod]
-        public void 當十二月預算為310一月預算為310_二月預算為280_三月預算為310_十二月一號到三月十號_預算拿到1000()
+        public void period_cross_4_budgets()
         {
-            var target = GetAccounting(new List<Budget>()
-            {
+            GivenBudgets(
                 new Budget() { YearMonth = "201712", Amount = 310 },
                 new Budget() { YearMonth = "201801", Amount = 310 },
                 new Budget() { YearMonth = "201802", Amount = 280 },
-                new Budget() { YearMonth = "201803", Amount = 310 },
-            });
-            var start = new DateTime(2017, 12, 1);
-            var end = new DateTime(2018, 3, 10);
+                new Budget() { YearMonth = "201803", Amount = 310 }
+                );
 
-            var actual = target.Calculate(start, end);
-
-            actual.Should().Be(1000);
-        }
-
-        private Accounting GetAccounting(List<Budget> budgets)
-        {
-            _repository.GetAll().Returns(budgets);
-
-            return new Accounting(_repository);
+            TotalAmountShouldBe(new DateTime(2017, 12, 1), new DateTime(2018, 3, 10), 1000);
         }
 
         private void GivenBudgets(params Budget[] budgets)
