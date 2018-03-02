@@ -39,7 +39,13 @@ namespace BudgetCalculator
         {
             var period = new Period(start, end);
 
-            return JoeyOneMonthAmount(period, _repo.GetAll()[0]);
+            var budgets = _repo.GetAll();
+            var totalAmount = 0m;
+            foreach (var budget in budgets)
+            {
+                totalAmount += JoeyOneMonthAmount(period, budget);
+            }
+            return totalAmount;
             return IsSameMonth(period)
                 ? GetOneMonthAmount(period)
                 : GetRangeMonthAmount(period);
