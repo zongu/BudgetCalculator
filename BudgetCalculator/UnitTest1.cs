@@ -96,39 +96,33 @@ namespace BudgetCalculator
             TotalAmountShouldBe(new DateTime(2018, 1, 1), new DateTime(2018, 2, 28), 342);
         }
 
+        /// <summary>
+        /// 當一月預算為62_二月預算為280_三月預算為62_一月一號到三月十號_預算拿到362
+        /// </summary>
         [TestMethod]
-        public void 當一月預算為62_二月預算為280_三月預算為62_一月一號到三月十號_預算拿到362()
+        public void period_overlap_three_budget_month()
         {
-            var target = BudgetCalculat(new List<Budget>()
-            {
-                new Budget() { YearMonth = "201801", Amount = 62 },
-                new Budget() { YearMonth = "201802", Amount = 280 },
-                new Budget() { YearMonth = "201803", Amount = 62 },
-            });
-            var start = new DateTime(2018, 1, 1);
-            var end = new DateTime(2018, 3, 10);
+            GivenBudgets(
+            new Budget() { YearMonth = "201801", Amount = 62 },
+            new Budget() { YearMonth = "201802", Amount = 280 },
+            new Budget() { YearMonth = "201803", Amount = 62 });
 
-            var actual = target.TotalAmount(start, end);
-
-            actual.Should().Be(362);
+            TotalAmountShouldBe(new DateTime(2018, 1, 1), new DateTime(2018, 3, 10), 362);
         }
 
+        /// <summary>
+        /// 當十二月預算為310一月預算為310_二月預算為280_三月預算為310_十二月一號到三月十號_預算拿到1000
+        /// </summary>
         [TestMethod]
-        public void 當十二月預算為310一月預算為310_二月預算為280_三月預算為310_十二月一號到三月十號_預算拿到1000()
+        public void period_overlap_four_budget_month()
         {
-            var target = BudgetCalculat(new List<Budget>()
-            {
+            GivenBudgets(
                 new Budget() { YearMonth = "201712", Amount = 310 },
                 new Budget() { YearMonth = "201801", Amount = 310 },
                 new Budget() { YearMonth = "201802", Amount = 280 },
-                new Budget() { YearMonth = "201803", Amount = 310 },
-            });
-            var start = new DateTime(2017, 12, 1);
-            var end = new DateTime(2018, 3, 10);
+                new Budget() { YearMonth = "201803", Amount = 310 });
 
-            var actual = target.TotalAmount(start, end);
-
-            actual.Should().Be(1000);
+            TotalAmountShouldBe(new DateTime(2017, 12, 1), new DateTime(2018, 3, 10), 1000);
         }
 
         private Accounting BudgetCalculat(List<Budget> budgets)
