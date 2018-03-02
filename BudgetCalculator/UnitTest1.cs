@@ -69,37 +69,31 @@ namespace BudgetCalculator
             TotalAmountShouldBe(new DateTime(2018, 1, 1), new DateTime(2018, 1, 31), 62);
         }
 
+        /// <summary>
+        /// 當一月預算為62_二月預算為0_三月預算為62_一月一號到三月十號_預算拿到82
+        /// </summary>
         [TestMethod]
-        public void 當一月預算為62_二月預算為0_三月預算為62_一月一號到三月十號_預算拿到82()
+        public void multiple_budgets()
         {
-            var target = BudgetCalculat(new List<Budget>()
-            {
+            GivenBudgets(
                 new Budget() { YearMonth = "201801", Amount = 62 },
                 new Budget() { YearMonth = "201802", Amount = 0 },
-                new Budget() { YearMonth = "201803", Amount = 62 },
-            });
-            var start = new DateTime(2018, 1, 1);
-            var end = new DateTime(2018, 3, 10);
+                new Budget() { YearMonth = "201803", Amount = 62 });
 
-            var actual = target.TotalAmount(start, end);
-
-            actual.Should().Be(82);
+            TotalAmountShouldBe(new DateTime(2018, 1, 1), new DateTime(2018, 3, 10), 82);
         }
 
+        /// <summary>
+        /// 當一月預算為62_二月預算為280_一月一號到二月二十八號_預算拿到342
+        /// </summary>
         [TestMethod]
-        public void 當一月預算為62_二月預算為280_一月一號到二月二十八號_預算拿到342()
+        public void period_is_equal_to_two_budget_months()
         {
-            var target = BudgetCalculat(new List<Budget>()
-            {
+            GivenBudgets(
                 new Budget() { YearMonth = "201801", Amount = 62 },
-                new Budget() { YearMonth = "201802", Amount = 280 }
-            });
-            var start = new DateTime(2018, 1, 1);
-            var end = new DateTime(2018, 2, 28);
+                new Budget() { YearMonth = "201802", Amount = 280 });
 
-            var actual = target.TotalAmount(start, end);
-
-            actual.Should().Be(342);
+            TotalAmountShouldBe(new DateTime(2018, 1, 1), new DateTime(2018, 2, 28), 342);
         }
 
         [TestMethod]
