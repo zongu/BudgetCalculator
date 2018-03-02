@@ -71,7 +71,7 @@
     <Compile Include="Accounting.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="Period.cs" />
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="AccountingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

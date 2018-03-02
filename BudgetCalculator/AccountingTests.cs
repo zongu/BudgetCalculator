@@ -7,7 +7,7 @@ using System.Linq;
 namespace BudgetCalculator
 {
     [TestClass]
-    public class UnitTest1
+    public class AccountingTests
     {
         private Accounting _accounting;
         private IRepository<Budget> _budgetRepository = Substitute.For<IRepository<Budget>>();
