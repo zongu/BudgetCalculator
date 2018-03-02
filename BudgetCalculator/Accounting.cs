@@ -18,6 +18,12 @@ namespace BudgetCalculator
 
         public DateTime StartDate { get; private set; }
         public DateTime EndDate { get; private set; }
+
+        public int MonthsBetweenPeriod()
+        {
+            var monthsBetweenPeriod = EndDate.MonthDifference(StartDate);
+            return monthsBetweenPeriod;
+        }
     }
 
     internal class Accounting
@@ -40,15 +46,15 @@ namespace BudgetCalculator
 
         private decimal GetRangeMonthAmount(Period period)
         {
-            var monthCount = period.EndDate.MonthDifference(period.StartDate);
+            var monthsBetweenPeriod = period.MonthsBetweenPeriod();
             var total = 0;
-            for (var index = 0; index <= monthCount; index++)
+            for (var index = 0; index <= monthsBetweenPeriod; index++)
             {
                 if (index == 0)
                 {
                     total += GetOneMonthAmount(new Period(period.StartDate, period.StartDate.LastDate()));
                 }
-                else if (index == monthCount)
+                else if (index == monthsBetweenPeriod)
                 {
                     total += GetOneMonthAmount(new Period(period.EndDate.FirstDate(), period.EndDate));
                 }
