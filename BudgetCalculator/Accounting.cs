@@ -30,16 +30,22 @@ namespace BudgetCalculator
             {
                 if (index == 0)
                 {
-                    total += GetOneMonthAmount(new Period(period.Start, period.Start.LastDate()));
+                    var firstMonthPeriod = new Period(period.Start, period.Start.LastDate());
+                    var firstMonthBudgetAmount = GetOneMonthAmount(firstMonthPeriod);
+                    total += firstMonthBudgetAmount;
                 }
                 else if (index == monthCount)
                 {
-                    total += GetOneMonthAmount(new Period(period.End.FirstDate(), period.End));
+                    var lastMonthPeriod = new Period(period.End.FirstDate(), period.End);
+                    var lastMonthBudgetAmount = GetOneMonthAmount(lastMonthPeriod);
+                    total += lastMonthBudgetAmount;
                 }
                 else
                 {
                     var now = period.Start.AddMonths(index);
-                    total += GetOneMonthAmount(new Period(now.FirstDate(), now.LastDate()));
+                    var fullMonthPeriod = new Period(now.FirstDate(), now.LastDate());
+                    var fullMonthBudgetAmount = GetOneMonthAmount(fullMonthPeriod);
+                    total += fullMonthBudgetAmount;
                 }
             }
             return total;
