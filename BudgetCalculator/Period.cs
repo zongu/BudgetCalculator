@@ -17,18 +17,18 @@ namespace BudgetCalculator
         public DateTime Start { get; private set; }
         public DateTime End { get; private set; }
 
-        public int EffectiveDays(Budget budget)
+        public int EffectiveDays(Period period)
         {
             var effectiveStartDate = this.Start;
-            if (this.Start < budget.FirstDay)
+            if (this.Start < period.Start)
             {
-                effectiveStartDate = budget.FirstDay;
+                effectiveStartDate = period.Start;
             }
 
             var effectiveEndDate = this.End;
-            if (this.End > budget.LastDay)
+            if (this.End > period.End)
             {
-                effectiveEndDate = budget.LastDay;
+                effectiveEndDate = period.End;
             }
             return (effectiveEndDate.AddDays(1) - effectiveStartDate).Days;
         }

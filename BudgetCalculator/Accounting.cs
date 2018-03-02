@@ -25,7 +25,7 @@ namespace BudgetCalculator
                 return 0;
             }
 
-            return budget.DailyAmount() * period.EffectiveDays(budget);
+            return budget.DailyAmount() * period.EffectiveDays(new Period(budget.FirstDay,budget.LastDay));
         }
     }
 }
