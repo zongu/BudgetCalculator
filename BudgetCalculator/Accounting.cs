@@ -16,21 +16,7 @@ namespace BudgetCalculator
         public decimal Calculate(DateTime start, DateTime end)
         {
             var period = new Period(start, end);
-
-            var budgets = this._repo.GetAll();
-            if (budgets.Any())
-            {
-                var totalAmount = 0m;
-                foreach (var budget in budgets)
-                {
-                    totalAmount += GetOneMonthAmount(period, budget);
-                }
-                return totalAmount;
-                return IsSameMonth(period)
-                    ? GetOneMonthAmount(period, budgets.Get(period.Start))
-                    : GetRangeMonthAmount(period);
-            }
-            return 0;
+            return _repo.GetAll().Sum(b => GetOneMonthAmount(period, b));
         }
 
         private decimal GetRangeMonthAmount(Period period)
