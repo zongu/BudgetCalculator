@@ -13,6 +13,12 @@ namespace BudgetCalculator
         private Accounting _accounting;
         private IRepository<Budget> _budgetRepository = Substitute.For<IRepository<Budget>>();
 
+        [TestInitialize]
+        public void TestInit()
+        {
+            _accounting = new Accounting(_budgetRepository);
+        }
+
         /// <summary>
         /// 資料庫沒有預算
         /// </summary>
@@ -23,30 +29,14 @@ namespace BudgetCalculator
             TotalAmountShouldBe(new DateTime(2018, 3, 1), new DateTime(2018, 3, 1), 0);
         }
 
-        private void TotalAmountShouldBe(DateTime start, DateTime end, int expected)
+        /// <summary>
+        /// 找不到這個月的預算_拿到0
+        /// </summary>
+        [TestMethod]
+        public void no_effective_days_period_after_budget_month()
         {
-            var actual = _accounting.TotalAmount(start, end);
-
-            actual.Should().Be(expected);
-        }
-
-        private void GivenBudgets(params Budget[] budgets)
-        {
-            _budgetRepository.GetAll().Returns(budgets.ToList());
-        }
-
-        [TestInitialize]
-        public void TestInit()
-        {
-            _accounting = new Accounting(_budgetRepository);
-        }
-
-        private Accounting BudgetCalculat(List<Budget> budgets)
-        {
-            IRepository<Budget> repo = Substitute.For<IRepository<Budget>>();
-            repo.GetAll().Returns(budgets);
-
-            return new Accounting(repo);
+            GivenBudgets(new Budget() { YearMonth = "201801", Amount = 62 });
+            TotalAmountShouldBe(new DateTime(2018, 2, 1), new DateTime(2018, 2, 15), 0);
         }
 
         [TestMethod]
@@ -62,18 +52,6 @@ namespace BudgetCalculator
         }
 
         [TestMethod]
-        public void 當一月預算為62_一月一號到一月三十一號_預算拿到62()
-        {
-            var target = BudgetCalculat(new List<Budget>() { new Budget() { YearMonth = "201801", Amount = 62 } });
-            var start = new DateTime(2018, 1, 1);
-            var end = new DateTime(2018, 1, 31);
-
-            var actual = target.TotalAmount(start, end);
-
-            actual.Should().Be(62);
-        }
-
-        [TestMethod]
         public void 當一月預算為62_一月一號到一月十五號_預算拿到30()
         {
             var target = BudgetCalculat(new List<Budget>() { new Budget() { YearMonth = "201801", Amount = 62 } });
@@ -86,15 +64,32 @@ namespace BudgetCalculator
         }
 
         [TestMethod]
-        public void 找不到這個月的預算_拿到0()
+        public void 當一月預算為62_一月一號到一月三十一號_預算拿到62()
         {
             var target = BudgetCalculat(new List<Budget>() { new Budget() { YearMonth = "201801", Amount = 62 } });
-            var start = new DateTime(2018, 2, 1);
-            var end = new DateTime(2018, 2, 15);
+            var start = new DateTime(2018, 1, 1);
+            var end = new DateTime(2018, 1, 31);
 
             var actual = target.TotalAmount(start, end);
 
-            actual.Should().Be(0);
+            actual.Should().Be(62);
+        }
+
+        [TestMethod]
+        public void 當一月預算為62_二月預算為0_三月預算為62_一月一號到三月十號_預算拿到82()
+        {
+            var target = BudgetCalculat(new List<Budget>()
+            {
+                new Budget() { YearMonth = "201801", Amount = 62 },
+                new Budget() { YearMonth = "201802", Amount = 0 },
+                new Budget() { YearMonth = "201803", Amount = 62 },
+            });
+            var start = new DateTime(2018, 1, 1);
+            var end = new DateTime(2018, 3, 10);
+
+            var actual = target.TotalAmount(start, end);
+
+            actual.Should().Be(82);
         }
 
         [TestMethod]
@@ -131,23 +126,6 @@ namespace BudgetCalculator
         }
 
         [TestMethod]
-        public void 當一月預算為62_二月預算為0_三月預算為62_一月一號到三月十號_預算拿到82()
-        {
-            var target = BudgetCalculat(new List<Budget>()
-            {
-                new Budget() { YearMonth = "201801", Amount = 62 },
-                new Budget() { YearMonth = "201802", Amount = 0 },
-                new Budget() { YearMonth = "201803", Amount = 62 },
-            });
-            var start = new DateTime(2018, 1, 1);
-            var end = new DateTime(2018, 3, 10);
-
-            var actual = target.TotalAmount(start, end);
-
-            actual.Should().Be(82);
-        }
-
-        [TestMethod]
         public void 當十二月預算為310一月預算為310_二月預算為280_三月預算為310_十二月一號到三月十號_預算拿到1000()
         {
             var target = BudgetCalculat(new List<Budget>()
@@ -163,6 +141,24 @@ namespace BudgetCalculator
             var actual = target.TotalAmount(start, end);
 
             actual.Should().Be(1000);
+        }
+
+        private Accounting BudgetCalculat(List<Budget> budgets)
+        {
+            IRepository<Budget> repo = Substitute.For<IRepository<Budget>>();
+            repo.GetAll().Returns(budgets);
+
+            return new Accounting(repo);
+        }
+
+        private void GivenBudgets(params Budget[] budgets)
+        {
+            _budgetRepository.GetAll().Returns(budgets.ToList());
+        }
+
+        private void TotalAmountShouldBe(DateTime start, DateTime end, int expected)
+        {
+            _accounting.TotalAmount(start, end).Should().Be(expected);
         }
     }
 }
