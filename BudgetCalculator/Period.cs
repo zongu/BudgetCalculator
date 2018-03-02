@@ -2,7 +2,7 @@
 
 namespace BudgetCalculator
 {
-    internal class Period
+    public class Period
     {
         public Period(DateTime start, DateTime end)
         {
