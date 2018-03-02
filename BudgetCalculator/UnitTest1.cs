@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace BudgetCalculator
@@ -123,14 +122,6 @@ namespace BudgetCalculator
                 new Budget() { YearMonth = "201803", Amount = 310 });
 
             TotalAmountShouldBe(new DateTime(2017, 12, 1), new DateTime(2018, 3, 10), 1000);
-        }
-
-        private Accounting BudgetCalculat(List<Budget> budgets)
-        {
-            IRepository<Budget> repo = Substitute.For<IRepository<Budget>>();
-            repo.GetAll().Returns(budgets);
-
-            return new Accounting(repo);
         }
 
         private void GivenBudgets(params Budget[] budgets)
