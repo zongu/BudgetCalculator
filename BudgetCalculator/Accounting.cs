@@ -44,6 +44,12 @@ namespace BudgetCalculator
 
         private int EffectiveAmountOfBudget(Period period, Budget budget)
         {
+            var dailyAmount = budget.Amount / budget.TotalDays;
+            return EffectiveDays(period, budget) * dailyAmount;
+        }
+
+        private static int EffectiveDays(Period period, Budget budget)
+        {
             if (period.EndDate < budget.FirstDay)
             {
                 return 0;
@@ -53,7 +59,6 @@ namespace BudgetCalculator
             {
                 return 0;
             }
-
             var effectiveEndDate = period.EndDate;
             if (period.EndDate > budget.LastDay)
             {
@@ -67,9 +72,7 @@ namespace BudgetCalculator
             }
 
             var effectiveDays = (effectiveEndDate.AddDays(1) - effectiveStartDate).Days;
-
-            var dailyAmount = budget.Amount / budget.TotalDays;
-            return effectiveDays * dailyAmount;
+            return effectiveDays;
         }
 
         private bool IsSameMonth(Period period)
