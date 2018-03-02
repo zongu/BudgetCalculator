@@ -39,6 +39,7 @@ namespace BudgetCalculator
         {
             var period = new Period(start, end);
 
+            return JoeyOneMonthAmount(period, _repo.GetAll()[0]);
             return IsSameMonth(period)
                 ? GetOneMonthAmount(period)
                 : GetRangeMonthAmount(period);
@@ -46,8 +47,9 @@ namespace BudgetCalculator
 
         private decimal GetRangeMonthAmount(Period period)
         {
-            var monthsBetweenPeriod = period.MonthsBetweenPeriod();
             var total = 0;
+            var monthsBetweenPeriod = period.MonthsBetweenPeriod();
+
             for (var index = 0; index <= monthsBetweenPeriod; index++)
             {
                 if (index == 0)
@@ -65,6 +67,36 @@ namespace BudgetCalculator
                 }
             }
             return total;
+        }
+
+        private int JoeyOneMonthAmount(Period period, Budget budget)
+        {
+            if (period.EndDate < budget.FirstDay)
+            {
+                return 0;
+            }
+
+            if (period.StartDate > budget.LastDay)
+            {
+                return 0;
+            }
+
+            var effectiveEndDate = period.EndDate;
+            if (period.EndDate > budget.LastDay)
+            {
+                effectiveEndDate = budget.LastDay;
+            }
+
+            var effectiveStartDate = period.StartDate;
+            if (period.StartDate < budget.FirstDay)
+            {
+                effectiveStartDate = budget.FirstDay;
+            }
+
+            var effectiveDays = (effectiveEndDate.AddDays(1) - effectiveStartDate).Days;
+
+            var dailyAmount = budget.Amount / budget.TotalDays;
+            return effectiveDays * dailyAmount;
         }
 
         private bool IsSameMonth(Period period)
