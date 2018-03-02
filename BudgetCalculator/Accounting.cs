@@ -17,20 +17,33 @@ namespace BudgetCalculator
         {
             var period = new Period(start, end);
 
-            return IsSameMonth(period)
-                ? GetOneMonthAmount(period)
-                : GetRangeMonthAmount(period);
+            var budgets = this._repo.GetAll();
+            if (budgets.Any())
+            {
+                var totalAmount = 0m;
+                foreach (var budget in budgets)
+                {
+                    totalAmount += GetOneMonthAmount(period, budget);
+                }
+                return totalAmount;
+                return IsSameMonth(period)
+                    ? GetOneMonthAmount(period, budgets.Get(period.Start))
+                    : GetRangeMonthAmount(period);
+            }
+            return 0;
         }
 
         private decimal GetRangeMonthAmount(Period period)
         {
+            var budgets = this._repo.GetAll();
             var monthCount = period.TotalMonths();
             var total = 0;
             for (var index = 0; index <= monthCount; index++)
             {
                 var monthPeriod = GetPeriod(period, index, monthCount);
 
-                total += GetOneMonthAmount(monthPeriod);
+                var budget = budgets.Get(monthPeriod.Start);
+                total += GetOneMonthAmount(monthPeriod, budget);
             }
             return total;
         }
@@ -57,21 +70,31 @@ namespace BudgetCalculator
             return period.Start.Year == period.End.Year && period.Start.Month == period.End.Month;
         }
 
-        private int GetOneMonthAmount(Period period)
+        private int GetOneMonthAmount(Period period, Budget budget)
         {
-            var budget = this._repo.GetAll().Get(period.Start);
             if (budget == null)
             {
                 return 0;
             }
 
-            var validDays = EffectiveDays(period.Start, period.End);
+            var validDays = EffectiveDays(period, budget);
             return budget.DailyAmount() * validDays;
         }
 
-        private int EffectiveDays(DateTime start, DateTime end)
+        private int EffectiveDays(Period period, Budget budget)
         {
-            return (end.AddDays(1) - start).Days;
+            var effectiveStartDate = period.Start;
+            if (period.Start < budget.FirstDay)
+            {
+                effectiveStartDate = budget.FirstDay;
+            }
+
+            var effectiveEndDate = period.End;
+            if (period.End > budget.LastDay)
+            {
+                effectiveEndDate = budget.LastDay;
+            }
+            return (effectiveEndDate.AddDays(1) - effectiveStartDate).Days;
         }
     }
 
