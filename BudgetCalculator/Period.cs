@@ -14,34 +14,36 @@ namespace BudgetCalculator
             EndDate = endDate;
         }
 
-        public DateTime StartDate { get; private set; }
         public DateTime EndDate { get; private set; }
+        public DateTime StartDate { get; private set; }
 
-        public int EffectiveDays(Period periodOfBudget)
+        public int EffectiveDays(Period period)
         {
-            if (EndDate < periodOfBudget.StartDate)
+            if (EndDate < period.StartDate)
             {
                 return 0;
             }
 
-            if (StartDate > periodOfBudget.EndDate)
+            if (StartDate > period.EndDate)
             {
                 return 0;
             }
-            var effectiveEndDate = EndDate;
-            if (EndDate > periodOfBudget.EndDate)
-            {
-                effectiveEndDate = periodOfBudget.EndDate;
-            }
 
-            var effectiveStartDate = StartDate;
-            if (StartDate < periodOfBudget.StartDate)
-            {
-                effectiveStartDate = periodOfBudget.StartDate;
-            }
+            return (EffectiveEndDate(period).AddDays(1) - EffectiveStartDate(period)).Days;
+        }
 
-            var effectiveDays = (effectiveEndDate.AddDays(1) - effectiveStartDate).Days;
-            return effectiveDays;
+        private DateTime EffectiveEndDate(Period period)
+        {
+            return EndDate > period.EndDate
+                ? period.EndDate
+                : EndDate;
+        }
+
+        private DateTime EffectiveStartDate(Period period)
+        {
+            return StartDate < period.StartDate
+                ? period.StartDate
+                : StartDate;
         }
     }
 }
