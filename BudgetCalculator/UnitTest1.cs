@@ -59,16 +59,14 @@ namespace BudgetCalculator
             TotalAmountShouldBe(new DateTime(2018, 1, 1), new DateTime(2018, 1, 15), 30);
         }
 
+        /// <summary>
+        /// 當一月預算為62_一月一號到一月三十一號_預算拿到62
+        /// </summary>
         [TestMethod]
-        public void 當一月預算為62_一月一號到一月三十一號_預算拿到62()
+        public void period_equal_budget_month()
         {
-            var target = BudgetCalculat(new List<Budget>() { new Budget() { YearMonth = "201801", Amount = 62 } });
-            var start = new DateTime(2018, 1, 1);
-            var end = new DateTime(2018, 1, 31);
-
-            var actual = target.TotalAmount(start, end);
-
-            actual.Should().Be(62);
+            GivenBudgets(new Budget() { YearMonth = "201801", Amount = 62 });
+            TotalAmountShouldBe(new DateTime(2018, 1, 1), new DateTime(2018, 1, 31), 62);
         }
 
         [TestMethod]
