@@ -4,19 +4,10 @@ namespace BudgetCalculator
 {
     public class Budget
     {
+        public int Amount { get; set; }
         public string YearMonth { get; set; }
 
-        public int Amount { get; set; }
-
-        public int TotalDays
-        {
-            get
-            {
-                return DateTime.DaysInMonth(FirstDay.Year, FirstDay.Month);
-            }
-        }
-
-        public DateTime FirstDay
+        private DateTime FirstDay
         {
             get
             {
@@ -24,7 +15,7 @@ namespace BudgetCalculator
             }
         }
 
-        public DateTime LastDay
+        private DateTime LastDay
         {
             get
             {
@@ -32,14 +23,22 @@ namespace BudgetCalculator
             }
         }
 
-        public int DailyAmount()
+        private int TotalDays
         {
-            return (Amount / TotalDays);
+            get
+            {
+                return DateTime.DaysInMonth(FirstDay.Year, FirstDay.Month);
+            }
         }
 
         public int EffectiveAmount(Period period)
         {
             return this.DailyAmount() * period.EffectiveDays(new Period(this.FirstDay, this.LastDay));
+        }
+
+        private int DailyAmount()
+        {
+            return (Amount / TotalDays);
         }
     }
 }
