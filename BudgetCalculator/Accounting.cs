@@ -34,7 +34,7 @@ namespace BudgetCalculator
             var period = new Period(start, end);
 
             return IsSameMonth(period)
-                ? GetOneMonthAmount(start, end)
+                ? GetOneMonthAmount(period)
                 : GetRangeMonthAmount(start, end);
         }
 
@@ -46,16 +46,19 @@ namespace BudgetCalculator
             {
                 if (index == 0)
                 {
-                    total += GetOneMonthAmount(start, start.LastDate());
+                    var period = new Period(start, start.LastDate());
+                    total += GetOneMonthAmount(period);
                 }
                 else if (index == monthCount)
                 {
-                    total += GetOneMonthAmount(end.FirstDate(), end);
+                    var period = new Period(end.FirstDate(), end);
+                    total += GetOneMonthAmount(period);
                 }
                 else
                 {
                     var now = start.AddMonths(index);
-                    total += GetOneMonthAmount(now.FirstDate(), now.LastDate());
+                    var period = new Period(now.FirstDate(), now.LastDate());
+                    total += GetOneMonthAmount(period);
                 }
             }
             return total;
@@ -66,13 +69,13 @@ namespace BudgetCalculator
             return period.StartDate.Year == period.EndDate.Year && period.StartDate.Month == period.EndDate.Month;
         }
 
-        private int GetOneMonthAmount(DateTime start, DateTime end)
+        private int GetOneMonthAmount(Period period)
         {
             var list = this._repo.GetAll();
-            var budget = list.Get(start)?.Amount ?? 0;
+            var budget = list.Get(period.StartDate)?.Amount ?? 0;
 
-            var days = DateTime.DaysInMonth(start.Year, start.Month);
-            var validDays = GetValidDays(start, end);
+            var days = DateTime.DaysInMonth(period.StartDate.Year, period.StartDate.Month);
+            var validDays = GetValidDays(period.StartDate, period.EndDate);
 
             return (budget / days) * validDays;
         }
