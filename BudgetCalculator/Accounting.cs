@@ -6,18 +6,18 @@ namespace BudgetCalculator
 {
     internal class Period
     {
-        public Period(DateTime start, DateTime end)
+        public Period(DateTime startDate, DateTime endDate)
         {
-            if (start > end)
+            if (startDate > endDate)
             {
                 throw new ArgumentException();
             }
-            Start = start;
-            End = end;
+            StartDate = startDate;
+            EndDate = endDate;
         }
 
-        public DateTime Start { get; private set; }
-        public DateTime End { get; private set; }
+        public DateTime StartDate { get; private set; }
+        public DateTime EndDate { get; private set; }
     }
 
     internal class Accounting
@@ -63,7 +63,7 @@ namespace BudgetCalculator
 
         private bool IsSameMonth(Period period)
         {
-            return period.Start.Year == period.End.Year && period.Start.Month == period.End.Month;
+            return period.StartDate.Year == period.EndDate.Year && period.StartDate.Month == period.EndDate.Month;
         }
 
         private int GetOneMonthAmount(DateTime start, DateTime end)
