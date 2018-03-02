@@ -39,13 +39,7 @@ namespace BudgetCalculator
         {
             var period = new Period(start, end);
 
-            var budgets = _repo.GetAll();
-            var totalAmount = 0m;
-            foreach (var budget in budgets)
-            {
-                totalAmount += EffectiveAmountOfBudget(period, budget);
-            }
-            return totalAmount;
+            return _repo.GetAll().Sum(b => EffectiveAmountOfBudget(period, b));
         }
 
         private int EffectiveAmountOfBudget(Period period, Budget budget)
