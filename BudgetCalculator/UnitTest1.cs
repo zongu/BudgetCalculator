@@ -39,15 +39,13 @@ namespace BudgetCalculator
             TotalAmountShouldBe(new DateTime(2018, 2, 1), new DateTime(2018, 2, 15), 0);
         }
 
+        /// <summary>
+        /// 時間起訖不合法
+        /// </summary>
         [TestMethod]
-        public void 時間起訖不合法()
+        public void invalid_period()
         {
-            var target = BudgetCalculat(new List<Budget>());
-            var start = new DateTime(2018, 3, 1);
-            var end = new DateTime(2018, 2, 1);
-
-            Action actual = () => target.TotalAmount(start, end);
-
+            Action actual = () => _accounting.TotalAmount(new DateTime(2018, 3, 1), new DateTime(2018, 2, 1));
             actual.Should().Throw<ArgumentException>();
         }
 
