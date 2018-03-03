@@ -8,6 +8,11 @@ namespace BudgetCalculator
 
         public int Amount { get; set; }
 
+        public int TotalDays
+        {
+            get => DateTime.DaysInMonth(FirstDate.Year, FirstDate.Month);
+        }
+
         public DateTime FirstDate
         {
             get => new DateTime(
@@ -23,9 +28,7 @@ namespace BudgetCalculator
 
         public int DayilyAmount
         {
-            get => Amount / DateTime.DaysInMonth(
-                int.Parse(YearMonth.Substring(0, 4)),
-                int.Parse(YearMonth.Substring(4, 2)));
+            get => Amount / TotalDays;
         }
     }
 }
