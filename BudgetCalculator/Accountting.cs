@@ -4,16 +4,16 @@ using System.Linq;
 
 namespace BudgetCalculator
 {
-    internal class BudgetCalculat
+    internal class Accountting
     {
         private readonly IRepository<Budget> _repo;
 
-        public BudgetCalculat(IRepository<Budget> repo)
+        public Accountting(IRepository<Budget> repo)
         {
             _repo = repo;
         }
 
-        public decimal Calculate(DateTime start, DateTime end)
+        public decimal TotalAmount(DateTime start, DateTime end)
         {
             if (start > end)
             {
